@@ -1,0 +1,15 @@
+----------------------levantamienoto local laurent-------------------------
+--------backend-------------
+cd C:\Users\arone\Laurent\backend
+
+mvn clean spring-boot:run
+
+--------frontend-------------
+cd C:\Users\arone\Laurent\frontend
+npm install
+npm run dev
+
+
+--------levantar ambas tanto front y  backend-------------
+
+start-dev.bat
