@@ -14,6 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { clienteHttp } from '../../api/clienteHttp';
 import { Shield, Sparkles, Award, Clock, ArrowRight, Stethoscope } from 'lucide-react';
+import { BotonWhatsAppBot } from '../../componentes/whatsapp/BotonWhatsAppBot';
 
 export const PaginaInicioWeb: React.FC = () => {
   const navigate = useNavigate();
@@ -243,6 +244,9 @@ export const PaginaInicioWeb: React.FC = () => {
           ))}
         </Grid>
       </Container>
+
+      {/* Botón Asistente Virtual WhatsApp */}
+      <BotonWhatsAppBot telefono="51999888777" nombreClinica="Clínica Dental Laurent" />
     </Box>
   );
 };

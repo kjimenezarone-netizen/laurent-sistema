@@ -18,7 +18,7 @@ import {
 import { clienteHttp } from '../../api/clienteHttp';
 import { Cita, ReservaCitaFormulario, SillonDental } from '../../tipos/tiposAgenda';
 import { Paciente } from '../../tipos/tiposPaciente';
-import { Calendar, Plus, Clock, User, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Calendar, Plus, Clock, User, CheckCircle, XCircle, AlertCircle, MessageCircle } from 'lucide-react';
 
 export const PaginaAgenda: React.FC = () => {
   const [citas, setCitas] = useState<Cita[]>([]);
@@ -95,6 +95,17 @@ export const PaginaAgenda: React.FC = () => {
     } catch (err) {
       console.error('Error cambiando estado:', err);
     }
+  };
+
+  const enviarRecordatorioWhatsApp = (cita: Cita) => {
+    const paciente = pacientes.find((p) => p.id === cita.pacienteId);
+    const telefono = paciente?.telefonoMovil ? paciente.telefonoMovil.replace(/\D/g, '') : '';
+    const numFinal = telefono.length > 0 ? (telefono.startsWith('51') ? telefono : `51${telefono}`) : '51999888777';
+    const fechaHora = new Date(cita.fechaHoraInicio);
+    const fecha = fechaHora.toLocaleDateString();
+    const hora = fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const mensaje = `Hola ${cita.pacienteNombreCompleto}, le recordamos su cita odontológica en Clínica Dental Laurent para el día ${fecha} a las ${hora} con el ${cita.odontologoNombreCompleto}. Por favor confirme su asistencia respondiendo a este mensaje. ¡Muchas gracias!`;
+    window.open(`https://wa.me/${numFinal}?text=${encodeURIComponent(mensaje)}`, '_blank');
   };
 
   const obtenerColorEstado = (codigo: string) => {
@@ -227,6 +238,15 @@ export const PaginaAgenda: React.FC = () => {
                         Cancelar
                       </Button>
                     )}
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      sx={{ color: '#16a34a', borderColor: '#22c55e', '&:hover': { bgcolor: '#f0fdf4' } }}
+                      startIcon={<MessageCircle size={14} />}
+                      onClick={() => enviarRecordatorioWhatsApp(cita)}
+                    >
+                      WhatsApp
+                    </Button>
                   </Box>
                 </CardContent>
               </Card>

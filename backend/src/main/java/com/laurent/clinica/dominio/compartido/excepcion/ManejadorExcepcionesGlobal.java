@@ -32,6 +32,16 @@ public class ManejadorExcepcionesGlobal {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(cuerpo);
     }
 
+    @ExceptionHandler({org.springframework.security.authentication.BadCredentialsException.class, org.springframework.security.core.userdetails.UsernameNotFoundException.class})
+    public ResponseEntity<Map<String, Object>> manejarCredencialesInvalidas(Exception ex) {
+        Map<String, Object> cuerpo = new HashMap<>();
+        cuerpo.put("marcaTemporal", LocalDateTime.now());
+        cuerpo.put("estado", HttpStatus.UNAUTHORIZED.value());
+        cuerpo.put("error", "No autorizado");
+        cuerpo.put("mensaje", "Usuario o contraseña incorrectos");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(cuerpo);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> manejarExcepcionGeneral(Exception ex) {
         Map<String, Object> cuerpo = new HashMap<>();
