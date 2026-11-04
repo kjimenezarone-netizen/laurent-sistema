@@ -6,9 +6,9 @@ spring:
     name: clinica-dental-laurent
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://db.anoqgbaerrqueysqskzc.supabase.co:5432/postgres?sslmode=require}
+    url: ${DB_URL:jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require}
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USUARIO:postgres}
+    username: ${DB_USUARIO:postgres.anoqgbaerrqueysqskzc}
     password: ${DB_CONTRASENA:EQ7S9BafG/vTZZr}
 
   flyway:
