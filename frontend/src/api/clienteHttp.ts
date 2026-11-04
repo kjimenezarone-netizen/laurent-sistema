@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-const envObj = (import.meta as unknown as { env?: { VITE_API_URL?: string } })?.env;
-const apiBaseUrl = envObj?.VITE_API_URL 
-  ? `${envObj.VITE_API_URL}/api/v1` 
-  : '/api/v1';
+const urlServidor = import.meta.env.VITE_API_URL || 'https://laurent-backend.onrender.com';
+const apiBaseUrl = `${urlServidor.replace(/\/$/, '')}/api/v1`;
 
 export const clienteHttp = axios.create({
   baseURL: apiBaseUrl,

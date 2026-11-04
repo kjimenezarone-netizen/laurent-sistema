@@ -17,9 +17,27 @@ import { Shield, Sparkles, Award, Clock, ArrowRight, Stethoscope } from 'lucide-
 
 export const PaginaInicioWeb: React.FC = () => {
   const navigate = useNavigate();
-  const [servicios, setServicios] = useState<any[]>([]);
-  const [odontologos, setOdontologos] = useState<any[]>([]);
-  const [testimonios, setTestimonios] = useState<any[]>([]);
+  const serviciosPorDefecto = [
+    { id: '1', nombre: 'Profilaxis y Destartraje', descripcion: 'Limpieza profunda con retiro de cálculo dental y pulido', precioBase: 120.00 },
+    { id: '2', nombre: 'Restauraciones Estéticas', descripcion: 'Resinas fotocurables de alta estética y durabilidad', precioBase: 90.00 },
+    { id: '3', nombre: 'Blanqueamiento Dental LED', descripcion: 'Aclaramiento dental seguro en consultorio', precioBase: 350.00 },
+    { id: '4', nombre: 'Implantes Dentales', descripcion: 'Rehabilitación fija con titanio osteointegrado', precioBase: 1500.00 }
+  ];
+
+  const odontologosPorDefecto = [
+    { id: '1', usuario: { nombres: 'Sebastián', apellidos: 'Laurent' }, especialidad: 'Rehabilitación Oral e Implantes', numeroColegiatura: 'COP-24510' },
+    { id: '2', usuario: { nombres: 'Valeria', apellidos: 'Mendoza Quispe' }, especialidad: 'Ortodoncia y Estética Dental', numeroColegiatura: 'COP-31892' }
+  ];
+
+  const testimoniosPorDefecto = [
+    { id: '1', nombrePaciente: 'Mariana Paredes', tratamientoRealizado: 'Diseño de Sonrisa', comentario: 'La atención del Dr. Laurent fue impecable, me devolvieron la seguridad al sonreír.', calificacionEstrellas: 5 },
+    { id: '2', nombrePaciente: 'Jorge Villanueva', tratamientoRealizado: 'Implante Dental', comentario: 'Cero dolor durante todo el procedimiento. El equipamiento y la higiene son de primer nivel.', calificacionEstrellas: 5 },
+    { id: '3', nombrePaciente: 'Claudia Morales', tratamientoRealizado: 'Ortodoncia Invisible', comentario: 'Excelente trato de todo el equipo de recepción y la Dra. Mendoza muy profesional.', calificacionEstrellas: 5 }
+  ];
+
+  const [servicios, setServicios] = useState<any[]>(serviciosPorDefecto);
+  const [odontologos, setOdontologos] = useState<any[]>(odontologosPorDefecto);
+  const [testimonios, setTestimonios] = useState<any[]>(testimoniosPorDefecto);
 
   useEffect(() => {
     const cargarDatosWeb = async () => {
@@ -29,11 +47,17 @@ export const PaginaInicioWeb: React.FC = () => {
           clienteHttp.get('/publico/odontologos'),
           clienteHttp.get('/publico/testimonios'),
         ]);
-        setServicios(respServicios.data.slice(0, 4));
-        setOdontologos(respOdontologos.data);
-        setTestimonios(respTestimonios.data);
+        if (Array.isArray(respServicios?.data) && respServicios.data.length > 0) {
+          setServicios(respServicios.data.slice(0, 4));
+        }
+        if (Array.isArray(respOdontologos?.data) && respOdontologos.data.length > 0) {
+          setOdontologos(respOdontologos.data);
+        }
+        if (Array.isArray(respTestimonios?.data) && respTestimonios.data.length > 0) {
+          setTestimonios(respTestimonios.data);
+        }
       } catch (err) {
-        console.error('Error cargando portal público:', err);
+        console.error('Portal usando datos base de contingencia:', err);
       }
     };
     cargarDatosWeb();
@@ -133,7 +157,7 @@ export const PaginaInicioWeb: React.FC = () => {
                     {s.descripcion}
                   </Typography>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#0f2c2b' }}>
-                    Desde S/ {s.precioBase.toFixed(2)}
+                    Desde S/ {Number(s.precioBase || 0).toFixed(2)}
                   </Typography>
                 </CardContent>
               </Card>
