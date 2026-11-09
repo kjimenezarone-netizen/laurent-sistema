@@ -12,8 +12,8 @@ if out.exists():
 usuario=input('Usuario administrador inicial [administrador]: ').strip() or 'administrador'
 clave=getpass('Contraseña del administrador (mínimo 14 caracteres): ')
 clave2=getpass('Confirma la contraseña: ')
-if clave!=clave2 or len(clave)<14 or any(c in clave for c in '\n\r='):
- print('Contraseña insegura o diferente; no se creó .env.');sys.exit(1)
+if clave!=clave2 or len(clave)<14 or any(c in clave for c in '\n\r=$#\"\''):
+ print('Contraseña diferente, corta o con símbolos incompatibles con .env ($, #, =, comillas); no se creó .env.');sys.exit(1)
 if not re.fullmatch(r'[A-Za-z0-9_.-]{3,60}',usuario):
  print('Usuario inválido.');sys.exit(1)
 postgres=token_urlsafe(36)

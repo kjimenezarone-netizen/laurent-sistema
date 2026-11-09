@@ -3,6 +3,7 @@ import com.laurent.clinica.servicio.BaseDatos;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,7 +31,7 @@ public class PacientesApi {
   String direccion,String alergias,String antecedentesAlertas,String contactoEmergencia,
   String representanteNombre,String representanteDocumento){}
  @PostMapping @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCIONISTA')")
- public Map<String,Object> crear(@Valid @RequestBody Paciente x){
+ @Transactional public Map<String,Object> crear(@Valid @RequestBody Paciente x){
   UUID id=db.id();
   db.exec("INSERT INTO pacientes(id,nombres,apellidos,tipo_documento,numero_documento,telefono,correo,direccion,alergias,antecedentes_alertas,contacto_emergencia,representante_nombre,representante_documento,creado_por)"+
    " VALUES (:id,:n,:a,:td,:nd,:t,:e,:d,:al,:an,:ce,:rn,:rd,:u)",
@@ -39,8 +40,8 @@ public class PacientesApi {
   db.audit("PACIENTES","REGISTRO","pacientes",id);return Map.of("id",id);
  }
  @PatchMapping("/{id}") @PreAuthorize("hasAnyRole('ADMINISTRADOR','RECEPCIONISTA')")
- public void actualizar(@PathVariable UUID id,@Valid @RequestBody Paciente x){
-  int n=db.exec("UPDATE pacientes SET nombres=:n,apellidos=:a,tipo_documento=:td,numero_documento=:nd,telefono=:t,correo=:e,direccion=:d,alergias=:al,antecedentes_alertas=:an,contacto_emergencia=:ce,representante_nombre=:rn,representante_documento=:rd,actualizado_en=now() WHERE id=:id AND activo=true",
+ @Transactional public void actualizar(@PathVariable UUID id,@Valid @RequestBody Paciente x){
+  int n=db.exec("UPDATE pacientes SET nombres=:n,apellidos=:a,tipo_documento=:td,numero_documento=:nd,telefono=:t,correo=:e,direccion=:d,contacto_emergencia=:ce,representante_nombre=:rn,representante_documento=:rd,actualizado_en=now() WHERE id=:id AND activo=true",
    BaseDatos.m("id",id,"n",x.nombres(),"a",x.apellidos(),"td",x.tipoDocumento()==null?"DNI":x.tipoDocumento(),"nd",x.numeroDocumento(),
      "t",x.telefono(),"e",x.correo(),"d",x.direccion(),"al",x.alergias(),"an",x.antecedentesAlertas(),"ce",x.contactoEmergencia(),"rn",x.representanteNombre(),"rd",x.representanteDocumento()));
   if(n==0)throw new ResponseStatusException(HttpStatus.NOT_FOUND);

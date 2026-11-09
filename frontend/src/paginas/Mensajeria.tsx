@@ -1,0 +1,6 @@
+import React from 'react';
+import {ShieldAlert} from 'lucide-react';
+import {fechaLocal} from '../servicios/cliente';
+import {CajaCard,Encabezado,Vacío,useDatos} from '../componentes/Ui';
+type Mensaje={id:string;creado_en:string;canal:string;destinatario:string;plantilla:string;estado:string};
+export function Mensajeria(){const mensajes=useDatos<Mensaje[]>('/operaciones/comunicaciones',[]);return <><Encabezado titulo="Mensajería y LaurentBot" subtitulo="Supervisión de mensajes y atención al paciente; no se realizan diagnósticos automatizados."/><div className="aviso info"><ShieldAlert size={18}/> El bot público responde preguntas frecuentes; las notificaciones oficiales de WhatsApp requieren una integración autorizada y no están activas todavía.</div><CajaCard titulo="Mensajes registrados">{mensajes.datos.length?<div className="tabla-scroll"><table className="tabla"><thead><tr><th>Fecha</th><th>Canal</th><th>Destino</th><th>Plantilla</th><th>Estado</th></tr></thead><tbody>{mensajes.datos.map(m=><tr key={m.id}><td>{fechaLocal(m.creado_en)}</td><td>{m.canal}</td><td>{m.destinatario}</td><td>{m.plantilla}</td><td>{m.estado}</td></tr>)}</tbody></table></div>:<Vacío texto="Todavía no hay mensajes enviados desde un proveedor conectado."/>}</CajaCard></>}

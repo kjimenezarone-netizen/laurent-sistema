@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import {CheckCircle2,Edit3,Globe,Plus,Star} from 'lucide-react';
-import {api,post,put,fechaLocal} from '../api/cliente';
+import {api,post,put,fechaLocal} from '../servicios/cliente';
 import {Aviso,CajaCard,Encabezado,Modal,Vacío,useDatos} from '../componentes/Ui';
 type Publicacion={id:string;titulo:string;slug:string;tipo:string;resumen?:string;contenido?:string;portada_url?:string;video_url?:string;inicia_en?:string;termina_en?:string;estado:string;creado_en:string};
 type Solicitud={id:string;nombre:string;telefono?:string;correo?:string;mensaje?:string;estado:string;creado_en:string};

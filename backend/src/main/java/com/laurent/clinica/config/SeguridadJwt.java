@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import javax.crypto.SecretKey;
 
@@ -44,8 +45,10 @@ class FiltroJwt extends OncePerRequestFilter {
         var claims=jwt.verificar(h.substring(7));
         String role=claims.get("rol",String.class);
         // Verificar roles conocidos. El backend comprueba acceso por paciente y por recurso en cada servicio.
+        // Un token con subject malformado nunca debe producir un error SQL/HTTP 500.
+        UUID usuarioId=UUID.fromString(claims.getSubject());
         if(List.of("ADMINISTRADOR","MEDICO","RECEPCIONISTA").contains(role) &&
-           Boolean.TRUE.equals(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM usuarios WHERE id=?::uuid AND rol=? AND activo=true)",Boolean.class,claims.getSubject(),role))) {
+           Boolean.TRUE.equals(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM usuarios WHERE id=? AND rol=? AND activo=true)",Boolean.class,usuarioId,role))) {
           var a=new UsernamePasswordAuthenticationToken(claims.getSubject(),null,List.of(new SimpleGrantedAuthority("ROLE_"+role)));
           SecurityContextHolder.getContext().setAuthentication(a);
         }

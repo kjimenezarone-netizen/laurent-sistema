@@ -1,5 +1,6 @@
 package com.laurent.clinica.api;
 import com.laurent.clinica.servicio.BaseDatos;
+import com.laurent.clinica.dominio.ReglasAgenda;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,10 +16,15 @@ import java.util.*;
 @PreAuthorize("hasAnyRole('ADMINISTRADOR','MEDICO','RECEPCIONISTA')")
 public class AgendaApi {
  private final BaseDatos db;
+ private static LocalTime hora(Object valor){
+  if(valor instanceof LocalTime t)return t;
+  if(valor instanceof java.sql.Time t)return t.toLocalTime();
+  return LocalTime.parse(valor.toString());
+ }
  public AgendaApi(BaseDatos db){this.db=db;}
  @GetMapping("/citas") public List<Map<String,Object>> citas(@RequestParam OffsetDateTime desde,@RequestParam OffsetDateTime hasta){
   BaseDatos.require(desde.isBefore(hasta) && Duration.between(desde,hasta).toDays()<=65,"Intervalo de agenda invalido");
-  return db.list("SELECT c.*, CONCAT(p.nombres,' ',p.apellidos) paciente, u.nombre odontologo, s.nombre sillon, t.nombre tratamiento FROM citas c "+
+  return db.list("SELECT c.*, CONCAT(p.nombres,' ',p.apellidos) paciente, u.nombre odontologo, s.nombre sillon, t.nombre tratamiento, p.telefono telefono_paciente FROM citas c "+
    "JOIN pacientes p ON c.paciente_id=p.id JOIN usuarios u ON c.odontologo_usuario_id=u.id JOIN sillones s ON c.sillon_id=s.id "+
    "LEFT JOIN catalogo_tratamientos t ON c.tratamiento_id=t.id "+
    "WHERE c.inicio<:hasta AND c.fin>:desde AND (:todos=true OR c.odontologo_usuario_id=:u) ORDER BY c.inicio",
@@ -35,6 +41,19 @@ public class AgendaApi {
   BaseDatos.require(x.inicio().isAfter(OffsetDateTime.now().minusMinutes(5)),"No se permite reservar en el pasado");
   var doctor=db.maybe("SELECT id FROM usuarios WHERE id=:id AND rol='MEDICO' AND activo=true",BaseDatos.m("id",x.odontologoUsuarioId()));
   BaseDatos.require(doctor!=null,"Seleccione un odontologo activo");
+  // Si el odontólogo ya cuenta con horarios semanales aprobados, la cita debe
+  // caber íntegramente dentro de al menos uno; sin horarios configurados se
+  // preserva el comportamiento de instalación inicial.
+  var aprobados=db.list("SELECT dia_semana,desde,hasta FROM disponibilidades_odontologo " +
+     "WHERE odontologo_usuario_id=:d AND aprobado=true",BaseDatos.m("d",x.odontologoUsuarioId()));
+  if(!aprobados.isEmpty()){
+   ZoneId zonaClinica=ZoneId.of("America/Lima");
+   boolean disponible=aprobados.stream().anyMatch(h ->
+     ReglasAgenda.cubreFranja(x.inicio(),x.fin(),((Number)h.get("dia_semana")).intValue(),
+       hora(h.get("desde")),
+       hora(h.get("hasta")),zonaClinica));
+   BaseDatos.require(disponible,"El horario no está aprobado para este odontólogo");
+  }
   var bloqueos=db.one("SELECT count(*) total FROM bloqueos_agenda WHERE (odontologo_usuario_id=:d OR sillon_id=:s) AND inicio<:fin AND fin>:inicio",
     BaseDatos.m("d",x.odontologoUsuarioId(),"s",x.sillonId(),"inicio",x.inicio(),"fin",x.fin()));
   BaseDatos.require(((Number)bloqueos.get("total")).longValue()==0,"Existe un bloqueo de agenda");

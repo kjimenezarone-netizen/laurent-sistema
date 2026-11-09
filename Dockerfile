@@ -1,15 +1,15 @@
-# Etapa 1: Compilación del backend con Maven y Java 17
-FROM maven:3.9-eclipse-temurin-17 AS build
-WORKDIR /app
-COPY backend/pom.xml .
+# Despliegue del backend desde la raíz (por ejemplo, Render).
+# La web React se construye con frontend/Dockerfile o de forma estática por separado.
+FROM maven:3.9-eclipse-temurin-21 AS builder
+WORKDIR /work/backend
+COPY backend/pom.xml ./pom.xml
+RUN mvn -q -DskipTests dependency:go-offline
 COPY backend/src ./src
-RUN mvn clean package -DskipTests
-
-# Etapa 2: Imagen de ejecución ligera
-FROM eclipse-temurin:17-jre-jammy
+RUN mvn -q -DskipTests package
+FROM eclipse-temurin:21-jre-alpine
+RUN addgroup -S laurent && adduser -S laurent -G laurent && mkdir -p /app/storage && chown -R laurent:laurent /app
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=builder /work/backend/target/*.jar app.jar
+USER laurent
 EXPOSE 8080
-ENV PORT=8080
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
-
+ENTRYPOINT ["java","-jar","/app/app.jar"]

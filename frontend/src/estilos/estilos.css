@@ -16,3 +16,62 @@
 @media(max-width:760px){.sidebar{position:fixed;top:0;bottom:0;left:0;transform:translateX(-110%);transition:transform .22s;width:280px;height:100vh}.sidebar.abierta{transform:translateX(0)}.cerrar-sidebar,.abrir-sidebar{display:inline-flex}.sidebar-cabecera{display:flex;justify-content:space-between;align-items:center}.overlay-mobile{position:fixed;inset:0;background:#0007;z-index:55}.barra-superior{height:74px;padding:0 18px;justify-content:flex-start;gap:12px}.barra-superior .pill-claro{display:none}.barra-superior-derecha{margin-left:auto}.pagina-app{padding:22px 13px 40px}.footer-app{padding:14px}.pagina-intro{padding:26px}.emblema-hero{display:none}.grid-kpis.tres{grid-template-columns:1fr}.grid-kpis.cuatro{grid-template-columns:repeat(2,1fr);gap:9px}.tarjeta-kpi{min-height:105px;padding:15px}.tarjeta-kpi strong{font-size:22px}.form-grid{grid-template-columns:1fr}.modal-contenido{padding:17px}.ficha-paciente{flex-wrap:wrap}.ficha-datos{min-width:200px}.ficha-alertas{max-width:100%;width:100%}.clinica-dos-columnas,.grid-config,.dos-columnas-cms{grid-template-columns:1fr}.perio-grid{grid-template-columns:repeat(3,1fr)}.toolbar-caja{align-items:stretch;flex-direction:column}.toolbar-caja>label,.toolbar-caja select{min-width:0;width:100%}.login-fondo{grid-template-columns:1fr}.login-banner{display:none}.login-tarjeta{min-height:100vh;padding:35px}.cinta-superior span:last-child{display:none}.cinta-superior{justify-content:center}.web-header{height:74px;padding:0 19px}.nav-publica.abierto{top:74px}.web-header-acciones .enlace-equipo{display:none}.web-hero{grid-template-columns:1fr;padding:70px 23px 35px}.web-hero h1{font-size:43px}.web-hero p{font-size:15px}.hero-lienzo{height:320px}.hero-diente{width:260px;height:260px}.hero-diente svg{height:220px;width:175px}.hero-flotante{bottom:10px;left:calc(50% - 140px)}.tira-valores{gap:17px;justify-content:flex-start}.tira-valores span{font-size:11px}.contenedor{padding:0 20px}.seccion-web{padding:58px 0}.encabezado-seccion h2,.dividir-seccion h2{font-size:33px}.grid-servicios,.grid-profesionales,.grid-noticias,.grid-reseñas,.dividir-seccion,.footer-contenido{grid-template-columns:1fr}.ilustracion-cuidado{height:315px}.ilustracion-aro{height:200px;width:200px}.web-footer{padding-top:35px}.footer-contenido{gap:23px}.formulario-contacto{padding:22px}.hero-confianza{gap:13px}.hero-botones{flex-direction:column;align-items:flex-start}.tarjeta-profesional .foto-profesional{height:200px}.cinta-superior{font-size:10px}}
 @media(max-width:430px){.grid-kpis.cuatro{grid-template-columns:1fr 1fr}.barra-superior h2{font-size:16px}.tarjetas-acceso{grid-template-columns:1fr 1fr}.tarjeta-acceso{padding:14px;min-height:145px}.tarjeta-acceso strong{font-size:12px}.boton{padding:10px 12px;font-size:12px}.encabezado-pagina h1{font-size:24px}.calendario-semana{min-width:950px}}
 .cms-subir{border:1px dashed #cbdedc;border-radius:12px;padding:14px;background:#f8fbfa;display:flex;flex-direction:column;gap:12px}.cms-subir h4{margin:0;color:#376668}
+/* Historia Clínica Integral v4: panel del médico, adaptable y sin datos ficticios. */
+.clinica-layout-integrado{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;align-items:start;margin-top:16px}
+.clinica-contenido{min-width:0}
+.clinica-barra-lateral{position:sticky;top:20px;display:flex;flex-direction:column;gap:12px}
+.clinica-panel-contexto{background:#fff;border:1px solid var(--linea,#e0e9eb);border-radius:15px;padding:18px;box-shadow:0 3px 15px rgba(9,45,49,.03)}
+.clinica-panel-contexto .contexto-etiqueta{display:flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.025em;text-transform:uppercase;font-weight:800;color:#527278;margin-bottom:12px}
+.clinica-panel-contexto strong{display:block;font-size:16px;color:#0e4a4e;line-height:1.3}
+.clinica-panel-contexto p{color:#667983;font-size:12px;margin:8px 0 0;line-height:1.6}
+.leyenda-clinica{display:flex;flex-wrap:wrap;gap:9px 20px;border-top:1px solid #e7edeb;padding-top:14px;margin-top:10px}
+.leyenda-clinica span{display:flex;align-items:center;gap:7px;color:#586b75;font-size:12px}
+.leyenda-clinica i{height:11px;width:11px;border-radius:3px;display:inline-block}
+.seleccion-presupuesto{display:flex;flex-direction:column;width:100%;padding:13px 16px;border:1px solid #dfe9e8;border-radius:10px;background:#fff;text-align:left;margin-bottom:8px;gap:5px;color:#304651}
+.seleccion-presupuesto.activo{border-color:#0e4a4e;background:#edf6f5}
+.seleccion-presupuesto span{font-weight:700;color:#0e4a4e}
+.seleccion-presupuesto small{color:#7a8b91}
+.formulario-inline{display:flex;flex-wrap:wrap;align-items:end;gap:14px;margin:16px 0}
+.formulario-inline label{flex:1;min-width:240px}
+.tabs-clinicas{overflow-x:auto;scrollbar-width:thin;flex-wrap:nowrap!important;gap:4px;white-space:nowrap;padding-bottom:8px}
+.tabs-clinicas button{flex-shrink:0}
+@media(max-width:1250px){.clinica-layout-integrado{grid-template-columns:minmax(0,1fr) 210px}}
+@media(max-width:980px){.clinica-layout-integrado{grid-template-columns:1fr}.clinica-barra-lateral{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.clinica-barra-lateral{grid-template-columns:1fr}.ficha-paciente{align-items:flex-start}.leyenda-clinica{gap:8px 13px}.clinica-panel-contexto{padding:14px}}
+
+/* Filtros operativos de la agenda semanal */
+.agenda-filtros{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:17px 0 18px;padding:15px;background:#f6f9fa;border:1px solid #e0e9eb;border-radius:13px}
+.agenda-filtros label{display:flex;flex-direction:column;gap:5px;flex:1 1 145px;color:#49636a;font-size:12px;font-weight:700}
+.agenda-filtros select,.agenda-filtros input{padding:9px 11px;min-width:0;width:100%;border-radius:8px;border:1px solid #cddbdc;background:white;color:#1c3038}
+@media(max-width:600px){.agenda-filtros{gap:8px}.agenda-filtros label{flex-basis:130px}}
+/* LaurentBot público: respuestas orientativas y transferencia voluntaria a WhatsApp */
+.laurentbot-web{position:fixed;right:22px;bottom:22px;z-index:90;font-family:inherit}
+.laurentbot-flotante{background:#0e4a4e;color:#fff;border:1px solid #c59b27;border-radius:40px;box-shadow:0 10px 30px #0a323755;padding:13px 17px;display:flex;gap:10px;align-items:center;font-weight:800}
+.laurentbot-flotante:hover{background:#186e71}
+.laurentbot-ventana{width:min(370px,calc(100vw - 26px));height:min(580px,calc(100vh - 100px));background:#fff;border-radius:19px;overflow:hidden;box-shadow:0 12px 44px #0a323744;display:flex;flex-direction:column;margin-bottom:13px;border:1px solid #d4e3e2}
+.laurentbot-cabecera{display:flex;align-items:center;gap:10px;padding:16px 16px;background:#0e4a4e;color:#fff}
+.laurentbot-cabecera div{flex:1;display:flex;flex-direction:column;gap:2px}.laurentbot-cabecera small{font-size:11px;color:#c6e0df}.laurentbot-cabecera button{border:0;background:transparent;color:#fff;padding:6px}
+.laurentbot-mensajes{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:#f7faf9}
+.bot-burbuja{align-self:flex-start;max-width:92%;background:#fff;border:1px solid #dce8e5;border-radius:14px 14px 14px 4px;padding:11px 13px;line-height:1.6;color:#2c4851}
+.bot-pregunta{align-self:flex-end;background:#dcefeb;padding:10px 13px;border-radius:14px 14px 4px 14px;color:#0e4a4e;font-weight:700}
+.laurentbot-opciones{display:flex;flex-direction:column;gap:7px;align-items:flex-start}.laurentbot-opciones button{display:flex;align-items:center;gap:5px;text-align:left;border:1px solid #bcd8d5;background:#fff;color:#0e4a4e;border-radius:9px;padding:8px 10px;font-weight:600;font-size:12px}
+.laurentbot-opciones button:hover{background:#edf8f5}
+.laurentbot-pie{border-top:1px solid #e4ecea;padding:13px 15px;background:#fff}.laurentbot-pie span{display:flex;align-items:center;gap:5px;color:#677c83;font-size:11px;margin-bottom:10px}.laurentbot-pie div{display:flex;gap:8px;flex-wrap:wrap}.laurentbot-pie a{background:#0e4a4e;color:#fff;border-radius:9px;font-size:12px;padding:9px 10px;display:flex;align-items:center;gap:5px}
+@media(max-width:600px){.laurentbot-web{right:13px;bottom:14px}.laurentbot-ventana{height:min(550px,calc(100vh - 90px))}.laurentbot-flotante{padding:12px 14px}}
+
+.selector-piezas-perio{display:flex;flex-wrap:wrap;gap:6px;padding:12px 0 16px}.selector-piezas-perio button{border:1px solid #bbd6d2;color:#0e4a4e;background:white;border-radius:8px;padding:7px 9px;font-weight:700;min-width:36px}.selector-piezas-perio button.activo{background:#0e4a4e;color:#fff;border-color:#0e4a4e}
+/* Laurent v5: reportes simples y accesibles, sin datos de demostración. */
+.grafico-ingresos{display:flex;gap:3px;align-items:flex-end;height:200px;padding:16px 8px 5px;border-bottom:1px solid #cbd5d7;overflow-x:auto}
+.grafico-columna{flex:1;min-width:5px;max-width:70px;height:100%;display:flex;align-items:center;flex-direction:column;justify-content:flex-end;position:relative}
+.grafico-columna>span{width:75%;min-height:3px;background:linear-gradient(180deg,#c59b27,#0e4a4e);border-radius:4px 4px 0 0}
+.grafico-columna>small{font-size:10px;position:absolute;bottom:-18px;color:#65757a}
+@media (max-width:650px){.grafico-ingresos{height:160px;min-width:100%;gap:2px}.grafico-columna{min-width:4px}}
+
+/* Impresión clínica de la sección seleccionada, sin navegación ni botones. */
+@media print {
+  .sidebar,.barra-superior,.footer-app,.tabs-clinicas,.acciones-encabezado,.boton,.btn,.icono-boton,.nota-caja,.abrir-sidebar,.fondo-modal{display:none!important}
+  body,.aplicacion,.contenido-app,.pagina-app{background:#fff!important;color:#111!important;overflow:visible!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+  .clinica-layout-integrado{display:block!important}.clinica-contenido{width:100%!important}.clinica-panel-lateral{display:none!important}
+  .caja-card,.ficha-paciente{break-inside:avoid;box-shadow:none!important;border:1px solid #bbb!important}
+  .arcada-scroll{overflow:visible!important}.arcada-dientes{min-width:0!important}
+}

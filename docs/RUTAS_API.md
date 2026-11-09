@@ -31,3 +31,30 @@ Prefijo `/api`. Excepto `autenticacion/iniciar-sesion` y `/publico/**`, todas re
 | GET | `/operaciones/comunicaciones`, `/auditoria`, `/esterilizacion` | Según perfil |
 
 **Nota:** recibos emitidos son internos, no comprobantes SUNAT. Las rutas de firma/consentimiento están limitadas a borradores y registro de archivos; no afirmar validez legal de firma electrónica avanzada.
+
+## Endpoints médicos incorporados en v4
+
+| Método | Ruta | Perfil |
+| --- | --- | --- |
+| GET | `/clinica/pacientes/{id}/presupuestos` | MÉDICO asignado (solo lectura) |
+| GET | `/clinica/planes/{planId}/items` | MÉDICO asignado (solo lectura) |
+| GET | `/clinica/pacientes/{id}/movimientos-cuenta` | MÉDICO asignado (solo lectura) |
+| GET | `/clinica/pacientes/{id}/consentimientos` | MÉDICO asignado (solo lectura) |
+| POST | `/clinica/consentimientos/borrador` | MÉDICO asignado (crea borrador, NO firma) |
+
+**No** se ha integrado todavía el envío oficial de WhatsApp Business ni la facturación electrónica SUNAT.
+
+
+## Endpoints incorporados en V5
+
+- `GET /api/horarios` — turnos visibles según rol.
+- `POST /api/horarios` — médico propone (o administración), queda pendiente.
+- `PATCH /api/horarios/{id}/aprobar` — solo administrador.
+- `GET /api/horarios/bloqueos` — bloqueos de agenda.
+- `POST /api/horarios/bloqueos` — solo administrador, impide bloquear si hay citas activas.
+- `GET /api/operaciones/inventario/alertas` — insumos con vencimientos o stock bajo.
+- `PATCH /api/operaciones/laboratorio/{id}/estado` — seguimiento por roles administrativos.
+- `GET /api/administracion/ingresos-diarios?dias=30` — BI diario.
+- `GET /api/administracion/tratamientos-frecuentes` — BI por tratamiento.
+
+**Nota:** Las rutas anteriores no equivalen a una integración externa de WhatsApp, SUNAT ni firmas digitales certificadas.

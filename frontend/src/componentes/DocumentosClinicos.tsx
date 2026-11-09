@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import {Download,FileImage,FileText,UploadCloud} from 'lucide-react';
-import {descargarArchivo,subirArchivoPaciente,fechaLocal,post} from '../api/cliente';
+import {descargarArchivo,subirArchivoPaciente,fechaLocal,post} from '../servicios/cliente';
 import {Aviso,Vacío,useDatos} from './Ui';
 type Archivo={id:string;nombre_original:string;tipo:string;mime:string;sha256:string;creado_en:string};
 type Consentimiento={id:string;plantilla_codigo:string;version_documento:number;creado_en:string;firmado_en?:string};

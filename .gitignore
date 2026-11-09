@@ -12,3 +12,7 @@ frontend/dist/
 storage/
 *.key
 *.pem
+pruebas/build/
+*.class
+__pycache__/
+.pytest_cache/

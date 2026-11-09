@@ -40,6 +40,9 @@ public class ClinicaApi {
   BaseDatos.require(x.pacienteId()!=null,"Paciente requerido");acceso(x.pacienteId());UUID id=db.id();
   db.exec("INSERT INTO anamnesis(id,paciente_id,registrada_por,enfermedades,medicamentos,alergias,antecedentes_familiares,observaciones,validada) VALUES(:id,:p,:u,:e,:m,:a,:f,:o,:v)",
     BaseDatos.m("id",id,"p",x.pacienteId(),"u",db.uid(),"e",x.enfermedades(),"m",x.medicamentos(),"a",x.alergias(),"f",x.antecedentesFamiliares(),"o",x.observaciones(),"v",x.validada()));
+  // Alertas clínicas sólo actualizadas tras validación por un profesional autorizado.
+  if(x.validada())db.exec("UPDATE pacientes SET alergias=:a,antecedentes_alertas=:e,actualizado_en=now() WHERE id=:p",
+    BaseDatos.m("a",x.alergias(),"e",x.enfermedades(),"p",x.pacienteId()));
   db.audit("CLINICA","ANAMNESIS","anamnesis",id);return Map.of("id",id);
  }
  @GetMapping("/pacientes/{pacienteId}/atenciones") public List<Map<String,Object>> atenciones(@PathVariable UUID pacienteId){
@@ -111,6 +114,17 @@ public class ClinicaApi {
   BaseDatos.require(Set.of("GENERAL","VESTIBULAR","LINGUAL","PALATINO","INCISAL","OCLUSAL","MESIAL","DISTAL").contains(x.superficie()),"Superficie invalida");
   BaseDatos.require(Set.of("CARIES","RESTAURACION","SELLANTE","CORONA","ENDODONCIA","IMPLANTE","FRACTURA","PIEZA_AUSENTE","PROTESIS").contains(x.tipo()),"Hallazgo invalido");
   BaseDatos.require(Set.of("EXISTENTE","PLANIFICADO","REALIZADO").contains(x.estado()),"Estado invalido");
+  // Impide vincular un hallazgo con atenciones u otros hallazgos de pacientes ajenos.
+  if(x.atencionId()!=null){
+   var at=db.one("SELECT paciente_id FROM atenciones_clinicas WHERE id=:id",BaseDatos.m("id",x.atencionId()));
+   BaseDatos.require(x.pacienteId().equals(at.get("paciente_id")),"Atencion de otro paciente");
+  }
+  if(x.rectificaA()!=null){
+   var anterior=db.one("SELECT paciente_id FROM hallazgos_odontograma WHERE id=:id",BaseDatos.m("id",x.rectificaA()));
+   BaseDatos.require(x.pacienteId().equals(anterior.get("paciente_id")),"No se puede rectificar un hallazgo ajeno");
+   BaseDatos.require(db.maybe("SELECT id FROM hallazgos_odontograma WHERE rectifica_a=:id",BaseDatos.m("id",x.rectificaA()))==null,
+       "El hallazgo ya fue rectificado");
+  }
   UUID id=db.id();
   db.exec("INSERT INTO hallazgos_odontograma(id,paciente_id,odontologo_usuario_id,pieza_fdi,superficie,tipo,estado,observacion,atencion_id,rectifica_a) " +
        "VALUES(:id,:p,:u,:fdi,:s,:t,:e,:o,:a,:r)",
@@ -146,6 +160,10 @@ public class ClinicaApi {
  public record Consentimiento(@NotNull UUID pacienteId,UUID atencionId,@NotBlank String plantillaCodigo,int versionDocumento,String documentoSha256){}
  @PostMapping("/consentimientos/borrador") @Transactional public Map<String,Object> consentimiento(@Valid @RequestBody Consentimiento x){
   acceso(x.pacienteId());UUID id=db.id();
+  if(x.atencionId()!=null){
+   var at=db.one("SELECT paciente_id FROM atenciones_clinicas WHERE id=:i",BaseDatos.m("i",x.atencionId()));
+   BaseDatos.require(x.pacienteId().equals(at.get("paciente_id")),"Atencion de otro paciente");
+  }
   db.exec("INSERT INTO consentimientos(id,paciente_id,atencion_id,plantilla_codigo,version_documento,documento_sha256,creado_por) VALUES(:id,:p,:a,:c,:v,:sha,:u)",
     BaseDatos.m("id",id,"p",x.pacienteId(),"a",x.atencionId(),"c",x.plantillaCodigo(),"v",Math.max(1,x.versionDocumento()),"sha",x.documentoSha256(),"u",db.uid()));
   db.audit("CLINICA","CONSENTIMIENTO_BORRADOR","consentimientos",id);
@@ -160,8 +178,46 @@ public class ClinicaApi {
   acceso(x.pacienteId());UUID id=db.id();
   db.exec("INSERT INTO planes_tratamiento(id,paciente_id,odontologo_usuario_id,observaciones) VALUES(:id,:p,:u,:o)",BaseDatos.m("id",id,"p",x.pacienteId(),"u",db.uid(),"o",x.observaciones()));
   for(var item:x.items()){
+   BaseDatos.require(item.piezaFdi()==null || fdi(item.piezaFdi()),"Pieza FDI del plan no válida");
    db.exec("INSERT INTO plan_items(plan_id,tratamiento_id,pieza_fdi,cantidad,precio_unitario) VALUES(:p,:t,:d,:c,:v)",BaseDatos.m("p",id,"t",item.tratamientoId(),"d",item.piezaFdi(),"c",item.cantidad(),"v",item.precioUnitario()));
   }
   db.audit("CLINICA","PLAN_TRATAMIENTO","planes_tratamiento",id);return Map.of("id",id);
  }
+
+ // Consulta financiera solo para el profesional vinculado; nunca permite cobrar ni editar saldos.
+ @GetMapping("/pacientes/{pacienteId}/movimientos-cuenta")
+ public List<Map<String,Object>> movimientosCuenta(@PathVariable UUID pacienteId){
+  acceso(pacienteId);
+  return db.list("SELECT tipo,id,descripcion,fecha,cargo,abono, " +
+    "SUM(cargo - abono) OVER (ORDER BY fecha,orden,id) AS saldo_acumulado FROM (" +
+    "SELECT 'CARGO'::text tipo,c.id,COALESCE(t.nombre,c.descripcion) descripcion, " +
+    "COALESCE(a.creada_en,c.creado_en) fecha,c.importe cargo,0::numeric abono,1 orden " +
+    "FROM cargos_cuenta c LEFT JOIN atenciones_clinicas a ON a.id=c.atencion_id " +
+    "LEFT JOIN catalogo_tratamientos t ON t.id=c.tratamiento_id " +
+    "WHERE c.paciente_id=:p AND c.estado='VIGENTE' " +
+    "UNION ALL " +
+    "SELECT 'ABONO'::text tipo,p.id,concat('Pago ',p.metodo) descripcion,p.pagado_en fecha, " +
+    "0::numeric cargo,p.monto abono,2 orden FROM pagos p " +
+    "WHERE p.paciente_id=:p AND p.estado='CONFIRMADO'" +
+    ") mov ORDER BY fecha,orden,id",BaseDatos.m("p",pacienteId));
+ }
+ @GetMapping("/pacientes/{pacienteId}/presupuestos")
+ public List<Map<String,Object>> presupuestos(@PathVariable UUID pacienteId){
+  acceso(pacienteId);
+  return db.list("SELECT p.id,p.version,p.estado,p.observaciones,p.creado_en, " +
+    "COALESCE(sum(i.cantidad * i.precio_unitario),0) monto_total,count(i.id) cantidad_items " +
+    "FROM planes_tratamiento p LEFT JOIN plan_items i ON i.plan_id=p.id " +
+    "WHERE p.paciente_id=:p GROUP BY p.id,p.version,p.estado,p.observaciones,p.creado_en " +
+    "ORDER BY p.creado_en DESC",BaseDatos.m("p",pacienteId));
+ }
+ @GetMapping("/planes/{planId}/items")
+ public List<Map<String,Object>> itemsPlan(@PathVariable UUID planId){
+  var plan=db.one("SELECT paciente_id FROM planes_tratamiento WHERE id=:id",BaseDatos.m("id",planId));
+  acceso((UUID)plan.get("paciente_id"));
+  return db.list("SELECT i.id,i.pieza_fdi,i.cantidad,i.precio_unitario,i.aprobado,i.ejecutado, " +
+    "t.nombre tratamiento,(i.cantidad*i.precio_unitario) subtotal " +
+    "FROM plan_items i JOIN catalogo_tratamientos t ON t.id=i.tratamiento_id " +
+    "WHERE i.plan_id=:id ORDER BY t.nombre,i.pieza_fdi",BaseDatos.m("id",planId));
+ }
+
 }

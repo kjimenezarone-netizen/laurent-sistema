@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import {Building2,CalendarDays,Plus,Settings2,ShieldCheck,Stethoscope,Users} from 'lucide-react';
-import {post,moneda} from '../api/cliente';
+import {post,moneda} from '../servicios/cliente';
 import {Aviso,CajaCard,Encabezado,Modal,Vacío,useDatos} from '../componentes/Ui';
 type Usuario={id:string;nombre:string;username:string;rol:string;activo:boolean;correo?:string};
 type Sede={id:string;nombre:string;direccion?:string};type Sillon={id:string;nombre:string;codigo:string;sede_id:string};type Tratamiento={id:string;codigo:string;nombre:string;precio_base:number;duracion_minutos:number};

@@ -1,0 +1,18 @@
+digraph Laurent {
+  graph [label="CLÍNICA DENTAL LAURENT · Arquitectura unificada V5",fontsize=22,fontname="DejaVu Sans",labelloc=t,bgcolor="#f8fafc",pad=0.35,ranksep=0.65,nodesep=0.3];
+  node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=11,fillcolor="#ffffff",color="#cbd5d7",fontcolor="#102f32",margin="0.18,0.11"];
+  edge [color="#64848b",arrowsize=0.75,penwidth=1.5];
+  public [label="SITIO PÚBLICO\nMarketing, reseñas, eventos,\ntratamientos, videos, LaurentBot",fillcolor="#f3ebd6",color="#c59b27"];
+  admin [label="ADMINISTRADOR\nDashboard BI · CMS · personal\nInventario · caja · esterilización",fillcolor="#ddf0ed",color="#0e4a4e"];
+  medico [label="MÉDICO\nHistoria clínica · odontograma FDI\nPeriodontograma · planes · laboratorio",fillcolor="#ddf0ed",color="#0e4a4e"];
+  recep [label="RECEPCIONISTA\nAgenda · pacientes · cobros\nConfirmaciones · seguimiento",fillcolor="#ddf0ed",color="#0e4a4e"];
+  react [label="REACT 18 + TYPESCRIPT\nfrontend/src/paginas/ · componentes/\nservicios/ · estilos/",fillcolor="#eff7f6",color="#0e4a4e"];
+  api [label="SPRING BOOT 3 · JAVA 21\nAPI REST /api · JWT + roles\nValidación · auditoría",fillcolor="#eff7f6",color="#0e4a4e"];
+  db [label="POSTGRESQL 16\nFlyway V1–V8 · restricciones de agenda\nHistoria clínica · caja · contenido",fillcolor="#f1f5f9"];
+  files [label="ARCHIVOS PROTEGIDOS\nRadiografías, fotos y documentos",fillcolor="#f1f5f9"];
+  {rank=same;public;admin;medico;recep;}
+  public->react;admin->react;medico->react;recep->react;
+  react->api [label="HTTPS / JSON",fontname="DejaVu Sans",fontsize=10];
+  api->db [label="SQL transaccional",fontname="DejaVu Sans",fontsize=10];
+  api->files;
+}
