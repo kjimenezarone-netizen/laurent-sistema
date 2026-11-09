@@ -57,4 +57,3 @@ public class AgendaControlador {
         return ResponseEntity.ok(agendaServicio.cambiarEstadoCita(id, dto));
     }
 }
-

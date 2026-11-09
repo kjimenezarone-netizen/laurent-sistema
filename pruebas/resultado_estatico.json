@@ -1,0 +1,43 @@
+{
+  "archivos": 71,
+  "migraciones_flyway": [
+    "V1__identidad_pacientes_agenda.sql",
+    "V2__historia_clinica_odontograma.sql",
+    "V3__caja_finanzas.sql",
+    "V4__cms_marketing.sql",
+    "V5__inventario_laboratorio_bot.sql",
+    "V6__auditoria_parametros.sql",
+    "V7__inmutabilidad_clinica_financiera.sql",
+    "V8__derechos_medios_web.sql"
+  ],
+  "roles_en_primera_migracion": {
+    "ADMINISTRADOR": 1,
+    "MEDICO": 1,
+    "RECEPCIONISTA": 1
+  },
+  "frontend_pages": [
+    "Administrador.tsx",
+    "Agenda.tsx",
+    "Caja.tsx",
+    "Clinica.tsx",
+    "Cms.tsx",
+    "Configuracion.tsx",
+    "Operaciones.tsx",
+    "Pacientes.tsx",
+    "Publica.tsx"
+  ],
+  "backend_apis": [
+    "AdministracionApi.java",
+    "AgendaApi.java",
+    "ArchivosClinicosApi.java",
+    "AutenticacionApi.java",
+    "CajaApi.java",
+    "ClinicaApi.java",
+    "MarketingApi.java",
+    "MultimediaWebApi.java",
+    "OperacionesApi.java",
+    "PacientesApi.java",
+    "PublicoApi.java"
+  ],
+  "test_logs_present": true
+}

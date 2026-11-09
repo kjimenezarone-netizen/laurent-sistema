@@ -1,0 +1,16 @@
+digraph Clinica {
+ graph [rankdir=LR,bgcolor="#ffffff",pad=.3,nodesep=.4,ranksep=.6,fontname="DejaVu Sans",label="LAURENT · MODELO CLÍNICO IMPLEMENTADO (RESUMEN)",labelloc=t,fontsize=18,fontcolor="#0e4a4e"];
+ node [shape=record,style="rounded,filled",fillcolor="#eaf5f3",color="#abc9c2",fontname="DejaVu Sans",fontsize=11];
+ edge [color="#a18d53",penwidth=1.6];
+ pacientes[label="{pacientes|id · PK|nombres · apellidos|alergias · alertas}"];
+ profesionales[label="{usuarios (MÉDICO)|id · PK|nombre · rol}"];
+ cita[label="{citas|paciente_id · FK|odontologo_usuario_id · FK|sillon_id · FK|inicio · fin · estado}"];
+ atencion[label="{atenciones_clinicas|paciente_id · FK|odontologo_usuario_id · FK|motivo · diagnóstico|procedimiento · firma_hash}"];
+ hallazgo[label="{hallazgos_odontograma|paciente_id · FK|pieza_fdi · superficie|tipo · estado|rectifica_a · FK}"];
+ perio[label="{periodontogramas|paciente_id · FK|odontologo_usuario_id · FK}"];
+ sitio[label="{periodontograma_sitios|examen_id · FK|pieza_fdi · sitio|sondaje_mm · recesion_mm}"];
+ plan[label="{planes_tratamiento|paciente_id · FK|odontologo_usuario_id · FK|estado · version}"];
+ consentimiento[label="{consentimientos|paciente_id · FK|documento_sha256|firma_modalidad}"];
+ archivos[label="{archivos_clinicos|paciente_id · FK|mime · sha256|almacenamiento_clave}"];
+ pacientes->cita;pacientes->atencion;pacientes->hallazgo;pacientes->perio;perio->sitio;pacientes->plan;pacientes->consentimiento;pacientes->archivos;profesionales->atencion;
+}

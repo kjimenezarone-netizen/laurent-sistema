@@ -1,15 +1,13 @@
-# Etapa 1: Compilación con Maven y OpenJDK 17
-FROM maven:3.9-eclipse-temurin-17 AS build
-WORKDIR /app
-COPY pom.xml .
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /build
+COPY pom.xml ./
+RUN mvn -q -DskipTests dependency:go-offline
 COPY src ./src
-RUN mvn clean package -DskipTests
-
-# Etapa 2: Imagen de ejecución ligera
-FROM eclipse-temurin:17-jre-jammy
+RUN mvn -q -DskipTests package
+FROM eclipse-temurin:21-jre-alpine
+RUN addgroup -S laurent && adduser -S laurent -G laurent && mkdir -p /app/storage && chown -R laurent:laurent /app
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /build/target/*.jar /app/app.jar
+USER laurent
 EXPOSE 8080
-ENV PORT=8080
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
-
+ENTRYPOINT ["java","-jar","/app/app.jar"]

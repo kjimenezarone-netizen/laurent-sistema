@@ -1,24 +1,43 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: laurent-postgres
     environment:
       POSTGRES_DB: laurent_db
-      POSTGRES_USER: laurent_dev
-      POSTGRES_PASSWORD: laurentpassword
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${DB_USER:-laurent_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Definir POSTGRES_PASSWORD en .env}
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./docker/init-db:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U laurent_dev -d laurent_db"]
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
       interval: 5s
-      timeout: 5s
-      retries: 10
+      retries: 15
     restart: unless-stopped
-
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/laurent_db
+      DB_USER: ${DB_USER:-laurent_app}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Definir POSTGRES_PASSWORD en .env}
+      JWT_SECRET: ${JWT_SECRET:?Definir JWT_SECRET en .env}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:?Definir ADMIN_USERNAME en .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Definir ADMIN_PASSWORD en .env}
+      ADMIN_NAME: ${ADMIN_NAME:-Administrador Laurent}
+      LAURENT_STORAGE_DIR: /app/storage
+    volumes:
+      - archivos_clinicos:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '127.0.0.1:8080:8080'
+    restart: unless-stopped
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - '127.0.0.1:3000:80'
+    restart: unless-stopped
 volumes:
   pgdata:
+  archivos_clinicos:

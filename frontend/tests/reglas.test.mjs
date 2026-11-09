@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {fdiValido,clasePieza,colision,centimos,saldoMovimientos,permisos} from '../src/dominio/reglas.ts';
+test('FDI permanente: 32 piezas válidas',()=>{const x=[1,2,3,4].flatMap(q=>Array.from({length:8},(_,i)=>q*10+i+1));assert.equal(x.filter(fdiValido).length,32)});
+test('FDI temporal: 20 piezas válidas',()=>{const x=[5,6,7,8].flatMap(q=>Array.from({length:5},(_,i)=>q*10+i+1));assert.equal(x.filter(fdiValido).length,20)});
+test('FDI rechaza códigos sin existencia clínica',()=>{for(const n of [0,19,20,39,49,56,66,76,86,100,1.5])assert.equal(fdiValido(n),false)});
+test('Clase anatómica por FDI',()=>{assert.equal(clasePieza(11),'INCISIVO');assert.equal(clasePieza(23),'CANINO');assert.equal(clasePieza(15),'PREMOLAR');assert.equal(clasePieza(16),'MOLAR');assert.equal(clasePieza(54),'MOLAR');assert.equal(clasePieza(99),'INVALIDO')});
+test('Las reservas solapadas deben bloquearse',()=>{assert.equal(colision(100,200,150,250),true);assert.equal(colision(100,200,200,250),false);assert.equal(colision(100,200,50,100),false)});
+test('Saldos se calculan por movimientos en centimos',()=>{assert.equal(saldoMovimientos([{cargo:180,abono:100},{cargo:0,abono:50}]),30)});
+test('Redondeo controlado a dos decimales',()=>{assert.equal(centimos(0.1+0.2),30)});
+test('Recepción no tiene permisos clínicos',()=>{assert.equal(permisos.RECEPCIONISTA.includes('HISTORIA_CLINICA'),false)});
+test('Administrador no registra actos médicos',()=>{assert.equal(permisos.ADMINISTRADOR.includes('ODONTOGRAMA'),false)});
+test('El médico no puede cobrar',()=>{assert.equal(permisos.MEDICO.includes('CAJA'),false)});

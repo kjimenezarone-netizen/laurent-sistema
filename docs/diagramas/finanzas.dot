@@ -1,0 +1,12 @@
+digraph Finanzas {
+ graph [rankdir=LR,bgcolor="#ffffff",pad=.3,nodesep=.4,ranksep=.65,fontname="DejaVu Sans",label="LAURENT · CARGOS · ABONOS · ESTADO DE CUENTA",labelloc=t,fontsize=18,fontcolor="#0e4a4e"];
+ node [shape=record,style="rounded,filled",fillcolor="#f8f4e7",color="#d7c694",fontname="DejaVu Sans",fontsize=12];
+ edge [color="#bd9c52",penwidth=1.7];
+ pacientes[label="{pacientes|id · PK}"];atencion[label="{atenciones_clinicas|id · PK|paciente_id · FK}"];
+ cargos[label="{cargos_cuenta|id · PK|paciente_id · FK|atencion_id · FK|importe · estado}"];
+ pagos[label="{pagos|id · PK|paciente_id · FK|monto · metodo|idempotencia · UNIQUE|estado}"];
+ aplicaciones[label="{aplicaciones_pago|pago_id · FK|cargo_id · FK|monto aplicado}"];
+ caja[label="{sesiones_caja|id · PK|recepcion_usuario_id · FK|apertura · cierre}"];
+ vista[label="{v_cuenta_paciente|total cargos|total pagado|deuda|saldo a favor}",fillcolor="#e6f3ed",color="#8fbfb0"];
+ pacientes->cargos;pacientes->pagos;atencion->cargos;cargos->aplicaciones;pagos->aplicaciones;caja->pagos;cargos->vista;pagos->vista;
+}

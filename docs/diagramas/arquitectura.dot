@@ -1,0 +1,15 @@
+digraph Laurent {
+ graph [rankdir=TB,bgcolor="#ffffff",pad=.4,nodesep=.35,ranksep=.55,fontname="DejaVu Sans",label="LAURENT v1 · ARQUITECTURA INTEGRADA",labelloc=t,fontsize=22,fontcolor="#0e4a4e"];
+ node [shape=box,style="rounded,filled",fillcolor="#edf6f4",color="#9db9b4",fontcolor="#0e4a4e",fontname="DejaVu Sans",fontsize=12,margin=".19,.15"];
+ edge [color="#6e9590",arrowsize=.7];
+ web [label="Web pública\nTratamientos · Blog · Videos · Eventos · Reseñas"];
+ admin [label="Panel ADMINISTRADOR\nBI · CMS · Personal · Configuración · Caja"];
+ doctor [label="Panel MÉDICO\nHistoria clínica · Odontograma · Planes"];
+ recep [label="Panel RECEPCIÓN\nAgenda · Pacientes · Caja · Seguimiento"];
+ {rank=same;web;admin;doctor;recep}
+ nginx [label="Frontend React + Nginx\nRutas públicas y protegidas",fillcolor="#fdf7e7",color="#d2ba77"];
+ api [label="Spring Boot 3 · Java 21\nAPIs REST · JWT · Roles · Auditoría",fillcolor="#e5efed"];
+ db [label="PostgreSQL 16\nFlyway V1–V8 · Integridad · Trazabilidad",fillcolor="#e5efed"];
+ media [label="Archivos restringidos\nRadiografías · Fotos · Documentos",fillcolor="#f5f9fc"];
+ web->nginx;admin->nginx;doctor->nginx;recep->nginx;nginx->api;api->db;api->media;
+}
