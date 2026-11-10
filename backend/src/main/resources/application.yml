@@ -12,7 +12,7 @@ spring:
   flyway:
     enabled: true
     validate-on-migrate: false
-    baseline-on-migrate: true
+    baseline-on-migrate: false
     clean-disabled: true
   servlet:
     multipart:
