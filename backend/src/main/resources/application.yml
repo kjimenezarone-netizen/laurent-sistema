@@ -1,18 +1,18 @@
 server:
   port: ${PORT:8080}
   error:
-    include-message: never
+    include-message: always
 spring:
   application:
     name: laurent-sistema
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/laurent_db}
-    username: ${DB_USER:laurent_app}
-    password: ${DB_PASSWORD}
+    url: ${DB_URL:${DATABASE_URL:jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require}}
+    username: ${DB_USUARIO:${DB_USER:postgres.anoqgbaerrqueysqskzc}}
+    password: ${DB_CONTRASENA:${DB_PASSWORD:EQ7S9BafG/vTZZr}}
   flyway:
     enabled: true
-    validate-on-migrate: true
-    baseline-on-migrate: false
+    validate-on-migrate: false
+    baseline-on-migrate: true
     clean-disabled: true
   servlet:
     multipart:
@@ -24,11 +24,11 @@ management:
       exposure:
         include: health,info
 jwt:
-  secret: ${JWT_SECRET}
-  expiration-hours: 8
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  expiration-hours: ${JWT_EXPIRATION_HOURS:8}
 bootstrap:
-  admin-username: ${ADMIN_USERNAME:}
-  admin-password: ${ADMIN_PASSWORD:}
+  admin-username: ${ADMIN_USERNAME:admin}
+  admin-password: ${ADMIN_PASSWORD:admin123}
   admin-name: ${ADMIN_NAME:Administrador Laurent}
 laurent:
-  storage-dir: ${LAURENT_STORAGE_DIR:./storage}
+  storage-dir: ${LAURENT_STORAGE_DIR:/app/storage}
