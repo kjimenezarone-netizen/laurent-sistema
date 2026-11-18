@@ -10,4 +10,4 @@ WORKDIR /app
 COPY --from=build /build/target/*.jar /app/app.jar
 USER laurent
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["java","-XX:+TieredCompilation","-XX:TieredStopAtLevel=1","-Xms128m","-Xmx384m","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]

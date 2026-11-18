@@ -9,6 +9,12 @@ spring:
     url: ${DB_URL:${DATABASE_URL:jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require}}
     username: ${DB_USUARIO:${DB_USER:postgres.anoqgbaerrqueysqskzc}}
     password: ${DB_CONTRASENA:${DB_PASSWORD:EQ7S9BafG/vTZZr}}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 300000
+      connection-timeout: 15000
+      max-lifetime: 600000
   flyway:
     enabled: true
     validate-on-migrate: false

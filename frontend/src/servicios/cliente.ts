@@ -4,7 +4,19 @@ export type Usuario = { id: string; nombre: string; rol: Rol; username?: string 
 const BASE_URL = (import.meta.env.VITE_API_URL || 'https://laurent-backend.onrender.com').replace(/\/$/, '');
 
 let tokenSesion: string | null = null;
-export const setToken = (token: string | null) => { tokenSesion = token; };
+try {
+  tokenSesion = typeof window !== 'undefined' ? localStorage.getItem('laurent_token') : null;
+} catch {}
+
+export const setToken = (token: string | null) => {
+  tokenSesion = token;
+  try {
+    if (typeof window !== 'undefined') {
+      if (token) localStorage.setItem('laurent_token', token);
+      else localStorage.removeItem('laurent_token');
+    }
+  } catch {}
+};
 export const tieneToken = () => Boolean(tokenSesion);
 export class ErrorApi extends Error {
   constructor(readonly status: number, message: string) {
